@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japan 2026 Trip Planner</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #f1f5f9; color: #1e293b; }
+        .container { min-height: 100vh; padding-bottom: 48px; }
+        .header { background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 20; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .header-content { max-width: 1000px; margin: 0 auto; padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .title { font-size: 24px; font-weight: 900; text-transform: uppercase; color: #0f172a; }
+        .title-accent { color: #dc2626; }
+        .nav { display: flex; gap: 4px; }
+        .nav-button { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; background: transparent; color: #64748b; }
+        .nav-button.active { background: #0f172a; color: white; }
+        .main { max-width: 1000px; margin: 0 auto; padding: 24px 16px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 16px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 0; border: none; background: none; width: 100%; text-align: left; font-family: inherit; }
+        .card-header:hover { opacity: 0.8; }
+        .card-header-flex { display: flex; gap: 16px; align-items: center; width: 100%; }
+        .card-date { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 56px; height: 56px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; position: relative; flex-shrink: 0; }
+        .card-date::before { content: ''; position: absolute; top: 0; width: 100%; height: 6px; background: #0f172a; border-radius: 8px 8px 0 0; }
+        .card-date-day { font-size: 10px; font-weight: 700; color: #94a3b8; margin-top: 4px; text-transform: uppercase; }
+        .card-date-num { font-size: 18px; font-weight: 900; color: #0f172a; }
+        .card-info { flex: 1; }
+        .card-location { font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .card-title { font-size: 16px; font-weight: 700; color: #0f172a; }
+        .card-hidden { display: none; }
+        .card-hidden.show { display: block; }
+        .card-content { padding: 20px 16px; border-top: 1px solid #e2e8f0; background: white; }
+        .card-content p { margin-bottom: 20px; color: #475569; font-size: 14px; line-height: 1.6; }
+        .section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 24px; }
+        .section-header { background: #f8fafc; padding: 16px; border-bottom: 1px solid #e2e8f0; font-weight: 700; }
+        .section-content { padding: 16px; }
+        .section-content div { padding: 16px 0; border-bottom: 1px solid #e2e8f0; }
+        .section-content div:last-child { border-bottom: none; }
+        .section-content strong { display: block; margin-bottom: 4px; color: #0f172a; }
+        .section-content p { font-size: 12px; color: #64748b; line-height: 1.6; }
+        .budget-box { background: #1e293b; color: white; padding: 24px; border-radius: 16px; text-align: center; margin-bottom: 24px; }
+        .budget-amount { font-size: 40px; font-weight: 900; margin-top: 8px; }
+        .checklist-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; cursor: pointer; user-select: none; }
+        .checklist-item input { width: 16px; height: 16px; cursor: pointer; }
+        .checklist-item label { flex: 1; cursor: pointer; font-size: 14px; }
+        .checklist-item input:checked ~ label { text-decoration: line-through; color: #94a3b8; }
+        .transport-item { padding: 12px 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; }
+        .transport-item:first-child { border-top: none; }
+        .transport-time { font-family: monospace; font-size: 12px; font-weight: 700; color: #64748b; min-width: 48px; }
+        .transport-info { flex: 1; }
+        .transport-route { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .transport-notes { font-size: 12px; color: #64748b; }
+        .transport-container { margin-bottom: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .transport-header { background: #e2e8f0; padding: 8px 16px; font-size: 12px; font-weight: 700; color: #334155; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
+        .activity-item { padding: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; }
+        .activity-title { display: flex; justify-content: space-between; align-items: start; font-weight: 700; font-size: 14px; color: #0f172a; }
+        .activity-time { font-size: 12px; font-family: monospace; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; color: #64748b; }
+        .activity-meta { font-size: 12px; color: #64748b; margin-top: 4px; }
+        .currency-form { padding: 20px; display: flex; gap: 16px; align-items: flex-end; }
+        .currency-input { flex: 1; }
+        .currency-input label { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        .currency-input input { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+        .currency-output { flex: 1; }
+        .currency-output label { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        .currency-result { width: 100%; padding: 12px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; font-weight: 700; text-align: center; color: #312e81; }
+        .sep { padding-bottom: 12px; color: #94a3b8; font-weight: 700; }
+        h4 { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1 class="title">Japan<span class="title-accent">2026</span></h1>
+                <div class="nav">
+                    <button class="nav-button active" onclick="switchTab(event, 'diary')">Tagebuch</button>
+                    <button class="nav-button" onclick="switchTab(event, 'tools')">Rechner</button>
+                    <button class="nav-button" onclick="switchTab(event, 'info')">Infos</button>
+                </div>
+            </div>
+        </div>
+
+        <main class="main" id="main">
+            <!-- DIARY TAB wird mit JS gefüllt -->
+            <div id="diary" class="tab-content active"></div>
+            
+            <!-- TOOLS TAB -->
+            <div id="tools" class="tab-content">
+                <div class="section">
+                    <div class="section-header">💹 Währungsrechner</div>
+                    <div class="currency-form">
+                        <div class="currency-input">
+                            <label>Yen (JPY)</label>
+                            <input type="number" id="yen" placeholder="0" oninput="convertCurrency()" />
+                        </div>
+                        <div class="sep">≈</div>
+                        <div class="currency-output">
+                            <label>Euro (EUR)</label>
+                            <div class="currency-result" id="euro">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="budget-box">
+                    <div>Geschätztes Budget</div>
+                    <div class="budget-amount">ca. 2.600 €</div>
+                    <div style="color: #94a3b8; font-size: 10px; margin-top: 8px; font-style: italic;">Pro Person, exkl. Shopping</div>
+                </div>
+                <div class="section">
+                    <div class="section-header">✅ To-Do Liste</div>
+                    <div class="section-content" id="checklist"></div>
+                </div>
+            </div>
+
+            <!-- INFO TAB -->
+            <div id="info" class="tab-content">
+                <div class="section">
+                    <div class="section-header">📄 Einreise & Visum</div>
+                    <div class="section-content" id="entry-data"></div>
+                </div>
+                <div class="section">
+                    <div class="section-header">🏨 Unterkunft & Etikette</div>
+                    <div class="section-content" id="accommodation-data"></div>
+                </div>
+                <div class="section">
+                    <div class="section-header">🍜 Essen & Etikette</div>
+                    <div class="section-content" id="food-data"></div>
+                </div>
+                <div class="section">
+                    <div class="section-header">💰 Finanzen</div>
+                    <div class="section-content" id="finance-data"></div>
+                </div>
+                <div class="section">
+                    <div class="section-header">📖 Glossar</div>
+                    <div class="section-content" id="glossary-data"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // DATA
+        const TripData = [
+            { day: 0, date: "30. Okt 2026", weekday: "Freitag", title: "Abflug MUC (Finnair)", location: "München → Osaka", description: "Wir nehmen die Qualitäts-Option über Helsinki! Schnelle Nordroute, entspannter Umstieg. Der Flug startet vormittags bequem um 10:30 Uhr in München.", transportLegs: [{ time: "10:30", route: "München (MUC) → Osaka (KIX)", notes: "1 Stopp in Helsinki (HEL). Ankunft 12:50 am nächsten Tag." }], activities: [] },
+            { day: 1, date: "31. Okt 2026", weekday: "Samstag", title: "Ankunft in Osaka", location: "Osaka", description: "Willkommen! Landung um 12:50 Uhr. Perfekte Zeit, um entspannt durch Zoll und Einreise zu kommen. Bis wir in Namba sind, ist es ca. 15:00 Uhr – genau richtig für den Hotel Check-in.", transportLegs: [{ time: "12:50", route: "Landung in Osaka (KIX)", notes: "Einreise & Zoll (ca. 1 Std)" }, { time: "14:05", route: "KIX → Namba Station", notes: "Nankai Rapi:t Beta 46" }], activities: [{ time: "17:00", title: "Shinsekai Retro Viertel", info: "1.5 Std • Kostenlos" }, { time: "19:00", title: "Dotonbori Neon-Walk", info: "Offen • Kostenlos" }] },
+            { day: 2, date: "01. Nov 2026", weekday: "Sonntag", title: "Koyasan - Die Pilgerreise", location: "Koyasan", description: "Der Weg ist das Ziel. Zwei Optionen für den Aufstieg: Wanderung oder mit der Standseilbahn. Wir reisen mit Daypack.", transportLegs: [{ time: "08:00", route: "Namba → Koyasan", notes: "Ltd. Exp. Koya" }, { time: "09:30", route: "Gokurakubashi → Koyasan", notes: "Standseilbahn + Bus" }], activities: [{ time: "10:30", title: "Choishi Michi Trail", info: "3-4 Std • Kostenlos ⭐" }, { time: "16:30", title: "Meditation im Tempel", info: "45 Min • Inklusive" }] },
+            { day: 3, date: "02. Nov 2026", weekday: "Montag", title: "Transfer nach Hiroshima", location: "Hiroshima", description: "Vom Heiligen Berg zur Stadt des Friedens.", transportLegs: [{ time: "08:30", route: "Tempel → Koyasan Station", notes: "Nankai Bus" }, { time: "11:45", route: "Shin-Osaka → Hiroshima", notes: "Shinkansen Sakura/Mizuho (1h 30m)" }], activities: [{ time: "14:30", title: "Peace Memorial Park", info: "2 Std • 200 JPY" }, { time: "17:30", title: "Orizuru Tower", info: "1 Std • 1700 JPY" }] },
+            { day: 4, date: "03. Nov 2026", weekday: "Dienstag", title: "Garten-Oase & Transfer Kanazawa", location: "Kanazawa", description: "Entspannter Vormittag im Shukkei-en Garten. Dann Shinkansen nach Kanazawa.", transportLegs: [{ time: "10:00", route: "Shukkei-en", notes: "15 Min zu Fuß" }, { time: "12:57", route: "Hiroshima → Shin-Osaka", notes: "Shinkansen Sakura 550" }, { time: "14:42", route: "Shin-Osaka → Tsuruga", notes: "Thunderbird 29 (Pass Start!)" }], activities: [{ time: "10:30", title: "Shukkei-en Garten", info: "1.5 Std • 260 JPY ⭐" }] },
+            { day: 5, date: "04. Nov 2026", weekday: "Mittwoch", title: "UNESCO Weltkulturerbe Shirakawa-go", location: "Takayama", description: "Gassho-zukuri Häuser und Takayama erkunden.", transportLegs: [{ time: "08:10", route: "Kanazawa → Shirakawa-go", notes: "Nohi Bus (Reservierung!)" }, { time: "13:15", route: "Shirakawa-go → Takayama", notes: "Nohi Bus" }], activities: [{ time: "09:45", title: "Shiroyama Viewpoint", info: "30 Min • Kostenlos ⭐" }, { time: "15:30", title: "Higashiyama Walking", info: "2 Std • Kostenlos ⭐" }] },
+            { day: 6, date: "05. Nov 2026", weekday: "Donnerstag", title: "Alpen-Traversierung nach Matsumoto", location: "Matsumoto", description: "Über die Pässe zur Schwarzen Burg.", transportLegs: [{ time: "09:40", route: "Takayama → Matsumoto", notes: "Alpico Bus (3.500 JPY)" }, { time: "12:05", route: "Ankunft Matsumoto", notes: "Gepäck ins Hotel" }], activities: [{ time: "14:00", title: "Burg Matsumoto", info: "1.5 Std • 700 JPY ⭐" }, { time: "16:00", title: "Altstadt Nawate", info: "1.5 Std • Kostenlos ⭐" }] },
+            { day: 7, date: "06. Nov 2026", weekday: "Freitag", title: "Direkt zum Fuji", location: "Fuji", description: "Transfer zur Südseite des Fuji.", transportLegs: [{ time: "08:00", route: "Matsumoto → Shin-Fuji", notes: "Azusa + Fujikawa (4000 JPY)" }, { time: "12:15", route: "Shin-Fuji → Hotel", notes: "Taxi (5000 JPY)" }], activities: [{ time: "13:30", title: "Lake Tanuki Walk", info: "1.5 Std • Kostenlos (Fuji-View)" }] },
+            { day: 8, date: "07. Nov 2026", weekday: "Samstag", title: "Fuji Radtour & nach Tokio", location: "Tokio", description: "Morgens Radtour, abends Shinkansen nach Tokio.", transportLegs: [{ time: "17:13", route: "Shin-Fuji → Tokio", notes: "Shinkansen Kodama (5.600 JPY)" }], activities: [{ time: "10:00", title: "See-Umrundung (Rad)", info: "1.5 Std • 500 JPY ⭐" }] },
+            { day: 9, date: "08. Nov 2026", weekday: "Sonntag", title: "Tokio West: Shibuya & Shinjuku", location: "Tokio", description: "High-Tech, Schreine und Neonlicht.", transportLegs: [], activities: [{ time: "16:00", title: "Shibuya Sky Sunset", info: "1.5 Std • 2.200 JPY ⭐" }, { time: "18:00", title: "Shibuya Crossing", info: "30 Min • Kostenlos" }] },
+            { day: 10, date: "09. Nov 2026", weekday: "Montag", title: "Tokio Ost: Old Tokyo & Hipster", location: "Tokio", description: "Das alte Tokio und Vintage-Viertel.", transportLegs: [], activities: [{ time: "10:00", title: "Yanaka Ginza", info: "2 Std • Kostenlos (Old Tokyo)" }, { time: "14:00", title: "Shimokitazawa", info: "3 Std • Kostenlos (Vintage)" }] },
+            { day: 11, date: "10. Nov 2026", weekday: "Dienstag", title: "Bonus-Tag Tokio & Rückflug", location: "Tokio → München", description: "Flug startet 21:55 Uhr! Ein kompletter letzter Tag in Tokio.", transportLegs: [{ time: "19:00", route: "Shibuya → Haneda Airport", notes: "Keikyu Line" }, { time: "21:55", route: "Haneda (HND) → München", notes: "Finnair via Helsinki. Ankunft Mi 09:30." }], activities: [{ time: "10:00", title: "Meiji Schrein", info: "2 Std • Kostenlos (Morgen)" }, { time: "14:00", title: "Omotesando", info: "2 Std • Letzte Einkäufe" }] }
+        ];
+
+        const ChecklistData = [
+            { id: 1, text: "Reisepass (Gültigkeit prüfen)" },
+            { id: 2, text: "Visit Japan Web (Einreiseformular) ausfüllen" },
+            { id: 3, text: "eSIM oder Pocket WiFi bestellen" },
+            { id: 4, text: "Kreditkarten (Visa/Mastercard) freischalten" },
+            { id: 5, text: "Steckdosen-Adapter (Typ A) einpacken" },
+            { id: 6, text: "Erste Unterkunft gebucht?" },
+            { id: 7, text: "Internationale Krankenversicherung" }
+        ];
+
+        const EntryData = [
+            { title: "Kein Visum nötig (Visa Waiver)", desc: "Für deutsche, österreichische und schweizer Staatsbürger gilt für touristische Reisen bis 90 Tage Visumsfreiheit. Du erhältst bei der Einreise einen 'Temporary Visitor' Sticker in den Pass." },
+            { title: "Visit Japan Web (Fast Track)", desc: "PFLICHT-TIPP: Lade deinen Reisepass vorab auf 'Visit Japan Web' hoch und fülle die digitale Zollerklärung aus. Du erhältst QR-Codes, mit denen du am Flughafen an den Papierschlangen vorbei direkt zum Ausgang kannst." },
+            { title: "Reisepass", desc: "Muss für die gesamte Dauer des Aufenthalts gültig sein. Japan verlangt keine spezifische Restgültigkeit (z.B. 6 Monate) über die Reise hinaus, aber er muss gültig sein." }
+        ];
+
+        const AccommodationGuideData = [
+            { title: "Twin Room (Wichtig!)", desc: "Bucht immer 'Twin Room' (2 getrennte Betten), nicht 'Double'. Ein japanisches 'Double' ist oft nur 140cm breit – für zwei Männer viel zu eng. Twin Rooms sind Standard für Freunde/Kollegen und völlig akzeptiert." },
+            { title: "Ryokan (Futons)", desc: "In traditionellen Gasthäusern (Ryokans) schlaft ihr auf Futons auf dem Tatami-Boden. Das Personal legt abends automatisch zwei getrennte Futons aus. Sehr bequem und viel Platz." },
+            { title: "Kapsel-Hotels", desc: "Geschlechtergetrennt. Es gibt oft reine Männer-Etagen mit Gemeinschaftsbad (Onsen-Style). Frauen haben meist eigene Etagen. Perfekt für Solo-Nächte oder als Erlebnis." }
+        ];
+
+        const FoodEtiquetteData = [
+            { title: "KEIN Trinkgeld!", desc: "In Japan gibt man NIEMALS Trinkgeld. Guter Service ist Standard und Stolz. Trinkgeld zu geben kann als Beleidigung aufgefasst werden." },
+            { title: "Bezahlung an der Kasse", desc: "In Restaurants wird meistens nicht am Tisch gezahlt. Man nimmt die Rechnung und geht zur Kasse am Ausgang. Geld oder Karte legt man in die kleine Schale (Geldteller), nicht direkt in die Hand." },
+            { title: "Oshibori (Feuchttuch)", desc: "Das feuchte Tuch, das man zu Beginn bekommt, ist nur für die Hände gedacht. Es gilt als unfein, sich damit das Gesicht abzuwischen." },
+            { title: "Izakaya", desc: "Japanische Kneipe. Man bestellt viele kleine Gerichte zum Teilen (Tapas-Style). Oft gibt es eine kleine Tischgebühr ('Otoshi'), für die man einen kleinen Snack bekommt." }
+        ];
+
+        const FinanceData = [
+            { title: "IC Cards (Suica / ICOCA)", desc: "Das wichtigste Zahlungsmittel! Für Züge, Busse, Konbinis und Automaten. Einfach auflegen ('Tap & Go'). Auf dem iPhone (Wallet) oder als physische Karte erhältlich." },
+            { title: "Bargeld (Yen)", desc: "Unverzichtbar! Viele Ramen-Läden, Tempel und ländliche Busse nehmen nur Bargeld. Immer 10.000-20.000 JPY dabei haben." },
+            { title: "Kreditkarten (Visa/Mastercard)", desc: "In Hotels, Kaufhäusern und modernen Restaurants akzeptiert. Wichtig: Am Terminal immer 'in Yen' abrechnen lassen (besserer Wechselkurs)." },
+            { title: "Geld abheben (7-Eleven)", desc: "Die sicherste Bank für Touristen: 'Seven Bank' ATMs in jedem 7-Eleven akzeptieren fast alle ausländischen Karten." }
+        ];
+
+        const GlossaryData = [
+            { cat: "Reise-Basics", items: [
+                { term: "Konbini", desc: "24/7 Supermärkte (7-Eleven, Lawson, FamilyMart). Lebensretter für Snacks, Getränke, Geldautomaten und Tickets." },
+                { term: "IC Card", desc: "Suica, Pasmo oder ICOCA. Wiederaufladbare Karte für U-Bahnen, Busse und Automaten." },
+                { term: "Coin Locker", desc: "Schließfächer an fast jedem Bahnhof. Bezahlt wird oft mit der IC Card." }
+            ]},
+            { cat: "Transport & Züge", items: [
+                { term: "Shinkansen", desc: "Auch 'Bullet Train'. Der berühmte Hochgeschwindigkeitszug (bis 320 km/h). Pünchtlich auf die Sekunde." },
+                { term: "Limited Express", desc: "Schnellzug (z.B. 'Thunderbird', 'Azusa'). Hält nur an wichtigen Stationen." },
+                { term: "Local Train", desc: "Bummelzug. Hält überall. Kein Aufpreis, keine Reservierung." }
+            ]}
+        ];
+
+        // RENDER
+        function renderDiary() {
+            const diary = document.getElementById('diary');
+            diary.innerHTML = TripData.map((day, idx) => `
+                <div class="card">
+                    <button class="card-header" onclick="toggleCard(this)">
+                        <div class="card-header-flex">
+                            <div class="card-date">
+                                <div class="card-date-day">${day.weekday.substring(0,2)}</div>
+                                <div class="card-date-num">${day.date.substring(0,2)}</div>
+                            </div>
+                            <div class="card-info">
+                                <div class="card-location">${day.location}</div>
+                                <div class="card-title">${day.title}</div>
+                            </div>
+                        </div>
+                    </button>
+                    <div class="card-hidden">
+                        <div class="card-content">
+                            <p>${day.description}</p>
+                            ${day.transportLegs && day.transportLegs.length > 0 ? `
+                                <div class="transport-container">
+                                    <div class="transport-header">🚂 Transport</div>
+                                    ${day.transportLegs.map(leg => `
+                                        <div class="transport-item">
+                                            <div class="transport-time">${leg.time}</div>
+                                            <div class="transport-info">
+                                                <div class="transport-route">${leg.route}</div>
+                                                <div class="transport-notes">${leg.notes}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            ${day.activities && day.activities.length > 0 ? `
+                                <h4>📸 Highlights</h4>
+                                ${day.activities.map(act => `
+                                    <div class="activity-item">
+                                        <div class="activity-title">
+                                            <span>${act.title}</span>
+                                            <span class="activity-time">${act.time}</span>
+                                        </div>
+                                        <div class="activity-meta">${act.info}</div>
+                                    </div>
+                                `).join('')}
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderChecklist() {
+            document.getElementById('checklist').innerHTML = ChecklistData.map(item => `
+                <div class="checklist-item">
+                    <input type="checkbox" id="check-${item.id}">
+                    <label for="check-${item.id}">${item.text}</label>
+                </div>
+            `).join('');
+        }
+
+        function renderInfoSections() {
+            document.getElementById('entry-data').innerHTML = EntryData.map(item => `
+                <div><strong>${item.title}</strong><p>${item.desc}</p></div>
+            `).join('');
+            
+            document.getElementById('accommodation-data').innerHTML = AccommodationGuideData.map(item => `
+                <div><strong>${item.title}</strong><p>${item.desc}</p></div>
+            `).join('');
+            
+            document.getElementById('food-data').innerHTML = FoodEtiquetteData.map(item => `
+                <div><strong>${item.title}</strong><p>${item.desc}</p></div>
+            `).join('');
+            
+            document.getElementById('finance-data').innerHTML = FinanceData.map(item => `
+                <div><strong>${item.title}</strong><p>${item.desc}</p></div>
+            `).join('');
+            
+            document.getElementById('glossary-data').innerHTML = GlossaryData.map(cat => `
+                <div>
+                    <strong style="display: block; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; color: #64748b;">${cat.cat}</strong>
+                    ${cat.items.map(item => `
+                        <div style="padding: 8px 0; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0;">
+                            <strong style="color: #0f172a; font-size: 13px;">${item.term}</strong>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 3px;">${item.desc}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function switchTab(e, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+        }
+
+        function toggleCard(header) {
+            header.nextElementSibling.classList.toggle('show');
+        }
+
+        function convertCurrency() {
+            const yen = document.getElementById('yen').value;
+            const euro = yen ? (Number(yen) / 165).toFixed(2) : '-';
+            document.getElementById('euro').textContent = euro + ' €';
+        }
+
+        // INIT
+        renderDiary();
+        renderChecklist();
+        renderInfoSections();
+    </script>
+</body>
+</html>

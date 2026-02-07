@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japan 2026 Trip Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        .container {
+            min-height: 100vh;
+            padding-bottom: 48px;
+        }
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #0f172a;
+        }
+        .title-accent {
+            color: #dc2626;
+        }
+        .nav {
+            display: flex;
+            gap: 4px;
+        }
+        .nav-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: capitalize;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            color: #64748b;
+        }
+        .nav-button.active {
+            background: #0f172a;
+            color: white;
+        }
+        .nav-button:hover:not(.active) {
+            background: #f1f5f9;
+        }
+        .main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+        .card-header:hover {
+            opacity: 0.8;
+        }
+        .card-header-flex {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            width: 100%;
+        }
+        .card-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .card-date::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 6px;
+            background: #0f172a;
+            border-radius: 8px 8px 0 0;
+        }
+        .card-date-day {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+        .card-date-num {
+            font-size: 18px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+        .card-info {
+            flex: 1;
+        }
+        .card-location {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .card-hidden {
+            display: none;
+        }
+        .card-hidden.show {
+            display: block;
+        }
+        .card-content {
+            padding: 20px 16px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+        .card-content p {
+            margin-bottom: 20px;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .section-header {
+            background: #f8fafc;
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-content {
+            padding: 16px;
+        }
+        .budget-box {
+            background: #1e293b;
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .budget-amount {
+            font-size: 40px;
+            font-weight: 900;
+            margin-top: 8px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .checklist-item input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .checklist-item label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .checklist-item input:checked ~ label {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+        .transport-item {
+            padding: 12px 16px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+        }
+        .transport-item:first-child {
+            border-top: none;
+        }
+        .transport-time {
+            font-family: monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            min-width: 48px;
+        }
+        .transport-info {
+            flex: 1;
+        }
+        .transport-route {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .transport-notes {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .transport-container {
+            margin-bottom: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .transport-header {
+            background: #e2e8f0;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+            font-weight: 700;
+            color: #334155;
+            text-transform: uppercase;
+        }
+        .activity-item {
+            padding: 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .activity-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            font-weight: 700;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        .activity-time {
+            font-size: 12px;
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #64748b;
+        }
+        .activity-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .currency-form {
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+        }
+        .currency-input {
+            flex: 1;
+        }
+        .currency-input label {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .currency-input input {
+            width: 100%;
+            padding: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .currency-output {
+            flex: 1;
+        }
+        .currency-output label {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .currency-result {
+            width: 100%;
+            padding: 12px;
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 8px;
+            font-weight: 700;
+            text-align: center;
+            color: #312e81;
+        }
+        .sep {
+            padding-bottom: 12px;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    Japan<span class="title-accent">2026</span>
+                </h1>
+                <div class="nav">
+                    <button class="nav-button active" onclick="switchTab('diary')">Tagebuch</button>
+                    <button class="nav-button" onclick="switchTab('tools')">Rechner</button>
+                    <button class="nav-button" onclick="switchTab('info')">Infos</button>
+                </div>
+            </div>
+        </div>
+
+        <main class="main">
+            <!-- DIARY TAB -->
+            <div id="diary" class="tab-content active">
+                <div class="card">
+                    <button class="card-header" onclick="toggleCard(this)">
+                        <div class="card-header-flex">
+                            <div class="card-date">
+                                <div class="card-date-day">FR</div>
+                                <div class="card-date-num">30</div>
+                            </div>
+                            <div class="card-info">
+                                <div class="card-location">München → Osaka</div>
+                                <div class="card-title">Abflug MUC (Finnair)</div>
+                            </div>
+                        </div>
+                    </button>
+                    <div class="card-hidden">
+                        <div class="card-content">
+                            <p>Wir nehmen die Qualitäts-Option über Helsinki! Der Flug startet 10:30 Uhr in München.</p>
+                            <div class="transport-container">
+                                <div class="transport-header">🚂 Transport</div>
+                                <div class="transport-item">
+                                    <div class="transport-time">10:30</div>
+                                    <div class="transport-info">
+                                        <div class="transport-route">München (MUC) → Osaka (KIX)</div>
+                                        <div class="transport-notes">1 Stopp in Helsinki. Ankunft 12:50 nächster Tag.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <button class="card-header" onclick="toggleCard(this)">
+                        <div class="card-header-flex">
+                            <div class="card-date">
+                                <div class="card-date-day">SA</div>
+                                <div class="card-date-num">31</div>
+                            </div>
+                            <div class="card-info">
+                                <div class="card-location">Osaka</div>
+                                <div class="card-title">Ankunft in Osaka</div>
+                            </div>
+                        </div>
+                    </button>
+                    <div class="card-hidden">
+                        <div class="card-content">
+                            <p>Landung um 12:50 Uhr. Perfekt für entspannten Check-in.</p>
+                            <div class="transport-container">
+                                <div class="transport-header">🚂 Transport</div>
+                                <div class="transport-item">
+                                    <div class="transport-time">12:50</div>
+                                    <div class="transport-info">
+                                        <div class="transport-route">Landung Osaka (KIX)</div>
+                                        <div class="transport-notes">Einreise & Zoll (ca. 1 Std)</div>
+                                    </div>
+                                </div>
+                                <div class="transport-item">
+                                    <div class="transport-time">14:05</div>
+                                    <div class="transport-info">
+                                        <div class="transport-route">KIX → Namba Station</div>
+                                        <div class="transport-notes">Nankai Rapi:t (1.450 JPY)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">📸 Highlights</div>
+                                <div class="activity-item">
+                                    <div class="activity-title">
+                                        <span>Shinsekai Retro Viertel</span>
+                                        <span class="activity-time">17:00</span>
+                                    </div>
+                                    <div class="activity-meta">1.5 Std • Kostenlos</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-title">
+                                        <span>Dotonbori Neon-Walk</span>
+                                        <span class="activity-time">19:00</span>
+                                    </div>
+                                    <div class="activity-meta">Offen • Kostenlos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOLS TAB -->
+            <div id="tools" class="tab-content">
+                <div class="section">
+                    <div class="section-header">💹 Währungsrechner</div>
+                    <div class="currency-form">
+                        <div class="currency-input">
+                            <label>Yen (JPY)</label>
+                            <input type="number" id="yen" placeholder="0" onchange="convertCurrency()" oninput="convertCurrency()" />
+                        </div>
+                        <div class="sep">≈</div>
+                        <div class="currency-output">
+                            <label>Euro (EUR)</label>
+                            <div class="currency-result" id="euro">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="budget-box">
+                    <div>Geschätztes Budget</div>
+                    <div class="budget-amount">ca. 2.600 €</div>
+                    <div style="color: #94a3b8; font-size: 10px; margin-top: 8px; font-style: italic;">Pro Person, exkl. Shopping</div>
+                </div>
+                <div class="section">
+                    <div class="section-header">✅ To-Do Liste</div>
+                    <div class="section-content">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-1">
+                            <label for="check-1">Reisepass (Gültigkeit prüfen)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-2">
+                            <label for="check-2">Visit Japan Web ausfüllen</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-3">
+                            <label for="check-3">eSIM oder Pocket WiFi bestellen</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-4">
+                            <label for="check-4">Kreditkarten freischalten</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-5">
+                            <label for="check-5">Steckdosen-Adapter einpacken</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-6">
+                            <label for="check-6">Erste Unterkunft gebucht?</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-7">
+                            <label for="check-7">Krankenversicherung</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFO TAB -->
+            <div id="info" class="tab-content">
+                <div class="section">
+                    <div class="section-header">📄 Einreise & Visum</div>
+                    <div class="section-content">
+                        <div style="margin-bottom: 16px;">
+                            <strong>Kein Visum nötig</strong>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Für Deutsche bis 90 Tage Visumsfreiheit. Du erhältst einen 'Temporary Visitor' Sticker.</p>
+                        </div>
+                        <div>
+                            <strong>Visit Japan Web (Fast Track)</strong>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 4px;">PFLICHT-TIPP: Lade Reisepass hoch und fülle Zollerklärung aus. Du erhältst QR-Codes für Fast Track am Flughafen.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Update buttons
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function toggleCard(header) {
+            const hidden = header.nextElementSibling;
+            hidden.classList.toggle('show');
+        }
+
+        function convertCurrency() {
+            const yen = document.getElementById('yen').value;
+            const euroEl = document.getElementById('euro');
+            if (yen) {
+                const euro = (Number(yen) / 165).toFixed(2);
+                euroEl.textContent = euro + ' €';
+            } else {
+                euroEl.textContent = '-';
+            }
+        }
+    </script>
+</body>
+</html>
