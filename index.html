@@ -116,10 +116,6 @@
             <!-- INFO TAB -->
             <div id="info" class="tab-content">
                 <div class="section">
-                    <div class="section-header">🏨 Hotel-Vorschläge</div>
-                    <div class="section-content" id="hotel-suggestions" style="padding: 0;"></div>
-                </div>
-                <div class="section">
                     <div class="section-header">📄 Einreise & Visum</div>
                     <div class="section-content" id="entry-data"></div>
                 </div>
@@ -309,25 +305,6 @@
         }
 
         function renderInfoSections() {
-            document.getElementById('hotel-suggestions').innerHTML = HotelSuggestionsData.map(city => `
-                <div style="padding: 16px; border-bottom: 2px solid #e2e8f0;">
-                    <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">${city.city}</div>
-                    ${city.hotels.map(hotel => `
-                        <div style="padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 4px;">
-                                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">${hotel.name}</span>
-                                <span style="font-size: 11px; font-weight: 700; background: #fef3c7; padding: 3px 8px; border-radius: 4px; color: #92400e;">${hotel.price}</span>
-                            </div>
-                            <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">${hotel.vibe}</p>
-                            <div style="font-size: 10px; color: #94a3b8; display: flex; gap: 12px;">
-                                <span>${hotel.type}</span>
-                                <span>${hotel.rating}</span>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
-            
             document.getElementById('entry-data').innerHTML = EntryData.map(item => `
                 <div><strong>${item.title}</strong><p>${item.desc}</p></div>
             `).join('');
