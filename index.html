@@ -58,11 +58,11 @@
         .activity-title { display: flex; justify-content: space-between; align-items: start; font-weight: 700; font-size: 14px; color: #0f172a; }
         .activity-time { font-size: 12px; font-family: monospace; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; color: #64748b; }
         .activity-meta { font-size: 12px; color: #64748b; margin-top: 4px; }
-        .accommodation-container { margin-bottom: 20px; background: #fef3c7; border-radius: 8px; border: 2px solid #fcd34d; overflow: hidden; }
-        .accommodation-header { background: #fcd34d; padding: 8px 16px; font-size: 12px; font-weight: 700; color: #92400e; text-transform: uppercase; border-bottom: 1px solid #fcd34d; }
+        .accommodation-container { margin-bottom: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .accommodation-header { background: #e2e8f0; padding: 8px 16px; font-size: 12px; font-weight: 700; color: #334155; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
         .accommodation-item { padding: 12px 16px; }
         .accommodation-name { font-weight: 700; font-size: 14px; color: #0f172a; margin-bottom: 4px; }
-        .accommodation-price { font-size: 12px; font-weight: 700; background: #fff7ed; padding: 4px 8px; border-radius: 4px; color: #92400e; display: inline-block; margin-bottom: 8px; }
+        .accommodation-price { font-size: 12px; font-weight: 700; background: #e0e7ff; padding: 4px 8px; border-radius: 4px; color: #312e81; display: inline-block; margin-bottom: 8px; }
         .accommodation-link { font-size: 12px; color: #0f172a; text-decoration: underline; cursor: pointer; }
         .currency-form { padding: 20px; display: flex; gap: 16px; align-items: flex-end; }
         .currency-input { flex: 1; }
@@ -296,16 +296,6 @@
                                     </div>
                                 </div>
                             ` : ''}
-                            ${day.accommodation ? `
-                                <div class="accommodation-container">
-                                    <div class="accommodation-header">🏨 Übernachtung</div>
-                                    <div class="accommodation-item">
-                                        <div class="accommodation-name">${day.accommodation.name}</div>
-                                        <div class="accommodation-price">${day.accommodation.price}</div>
-                                        <div><a href="${day.accommodation.link}" target="_blank" class="accommodation-link">Zum Angebot →</a></div>
-                                    </div>
-                                </div>
-                            ` : ''}
                             ${day.activities && day.activities.length > 0 ? `
                                 <h4>📸 Highlights</h4>
                                 ${day.activities.map(act => `
@@ -317,6 +307,16 @@
                                         <div class="activity-meta">${act.info}</div>
                                     </div>
                                 `).join('')}
+                            ` : ''}
+                            ${day.accommodation ? `
+                                <div class="accommodation-container">
+                                    <div class="accommodation-header">🏨 Übernachtung</div>
+                                    <div class="accommodation-item">
+                                        <div class="accommodation-name">${day.accommodation.name}</div>
+                                        <div class="accommodation-price">${day.accommodation.price}</div>
+                                        <div><a href="${day.accommodation.link}" target="_blank" class="accommodation-link">Zum Angebot →</a></div>
+                                    </div>
+                                </div>
                             ` : ''}
                         </div>
                     </div>
