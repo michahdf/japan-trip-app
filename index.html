@@ -116,6 +116,10 @@
             <!-- INFO TAB -->
             <div id="info" class="tab-content">
                 <div class="section">
+                    <div class="section-header">🏨 Hotel-Vorschläge</div>
+                    <div class="section-content" id="hotel-suggestions" style="padding: 0;"></div>
+                </div>
+                <div class="section">
                     <div class="section-header">📄 Einreise & Visum</div>
                     <div class="section-content" id="entry-data"></div>
                 </div>
@@ -170,6 +174,44 @@
             { title: "Kein Visum nötig (Visa Waiver)", desc: "Für deutsche, österreichische und schweizer Staatsbürger gilt für touristische Reisen bis 90 Tage Visumsfreiheit. Du erhältst bei der Einreise einen 'Temporary Visitor' Sticker in den Pass." },
             { title: "Visit Japan Web (Fast Track)", desc: "PFLICHT-TIPP: Lade deinen Reisepass vorab auf 'Visit Japan Web' hoch und fülle die digitale Zollerklärung aus. Du erhältst QR-Codes, mit denen du am Flughafen an den Papierschlangen vorbei direkt zum Ausgang kannst." },
             { title: "Reisepass", desc: "Muss für die gesamte Dauer des Aufenthalts gültig sein. Japan verlangt keine spezifische Restgültigkeit (z.B. 6 Monate) über die Reise hinaus, aber er muss gültig sein." }
+        ];
+
+        const HotelSuggestionsData = [
+            { city: "Osaka (3N)", hotels: [
+                { name: "Hotel Keihan Universal City", price: "ca. 120€/N", vibe: "Modern & zentral in Namba", type: "Business Hotel", rating: "⭐⭐⭐⭐" },
+                { name: "Daiwa Roynet Hotel Osaka-Kitahama", price: "ca. 140€/N", vibe: "Upscale mit Spa & guter Küche", type: "Upper Mid-Range", rating: "⭐⭐⭐⭐⭐" },
+                { name: "Crosshotel Osaka", price: "ca. 100€/N", vibe: "Budget-freundlich, Dotonbori Nähe", type: "Budget", rating: "⭐⭐⭐" }
+            ]},
+            { city: "Koyasan (1N im Ryokan)", hotels: [
+                { name: "Rengejoin Monastery", price: "ca. 80€/N incl. Dinner", vibe: "Authentisches Ryokan-Erlebnis mit Meditation", type: "Ryokan (Shukubo)", rating: "⭐⭐⭐⭐⭐" },
+                { name: "Koyasan Guest House", price: "ca. 50€/N", vibe: "Budget-freundlich, moderner Ryokan-Stil", type: "Ryokan", rating: "⭐⭐⭐⭐" }
+            ]},
+            { city: "Hiroshima (2N)", hotels: [
+                { name: "Hotel Gracery Hiroshima", price: "ca. 110€/N", vibe: "Central mit guter Business-Ausstattung", type: "Business Hotel", rating: "⭐⭐⭐⭐" },
+                { name: "The Ritz-Carlton Hiroshima", price: "ca. 350€/N", vibe: "Luxus am Fluss mit Ausblick", type: "Luxury", rating: "⭐⭐⭐⭐⭐" }
+            ]},
+            { city: "Kanazawa (2N)", hotels: [
+                { name: "Daiwa Roynet Hotel Kanazawa", price: "ca. 130€/N", vibe: "Premium, nah bei Schloss & Gärten", type: "Upper Mid-Range", rating: "⭐⭐⭐⭐⭐" },
+                { name: "Hotel Mystays Kanazawa Castle", price: "ca. 90€/N", vibe: "Modernes Budget-Hotel am Schloss", type: "Business Hotel", rating: "⭐⭐⭐⭐" }
+            ]},
+            { city: "Takayama (1N)", hotels: [
+                { name: "Spa Hotel Alpina Takayama", price: "ca. 110€/N", vibe: "Berghütten-Feeling mit Onsen", type: "Onsen Resort", rating: "⭐⭐⭐⭐⭐" },
+                { name: "Spa Hotel Assantei", price: "ca. 95€/N", vibe: "Traditionell, gutes Preis-Leistung", type: "Ryokan", rating: "⭐⭐⭐⭐" }
+            ]},
+            { city: "Matsumoto (1N)", hotels: [
+                { name: "Hotel Buena Vista Matsumoto", price: "ca. 100€/N", vibe: "Direkt gegenüber der Burg", type: "Mid-Range", rating: "⭐⭐⭐⭐" },
+                { name: "Agape Matsumoto", price: "ca. 80€/N", vibe: "Gemütlich, Familie-geführt", type: "Guesthouse", rating: "⭐⭐⭐⭐" }
+            ]},
+            { city: "Fuji/Hakone (2N)", hotels: [
+                { name: "Hakone Ginyu (Ryokan)", price: "ca. 250€/N incl. Dinner", vibe: "Premium-Ryokan mit Fuji-Ausblick & privates Onsen", type: "Luxury Ryokan", rating: "⭐⭐⭐⭐⭐" },
+                { name: "Hotel Mt. Fuji", price: "ca. 120€/N", vibe: "See-Lage mit Fuji-Blick", type: "Mid-Range Resort", rating: "⭐⭐⭐⭐" },
+                { name: "Fuji Lakeside Hotel", price: "ca. 85€/N", vibe: "Budget mit schönem See-Blick", type: "Business Hotel", rating: "⭐⭐⭐" }
+            ]},
+            { city: "Tokio (3N)", hotels: [
+                { name: "Shinjuku Granbell Hotel", price: "ca. 130€/N", vibe: "Design-Hotel, kreativ & zentral in Shinjuku", type: "Boutique Hotel", rating: "⭐⭐⭐⭐⭐" },
+                { name: "Hotel Metropolitan Tokyo", price: "ca. 100€/N", vibe: "Klassisch, zentral, gutes Preis-Leistung", type: "Business Hotel", rating: "⭐⭐⭐⭐" },
+                { name: "Mitsui Garden Hotel Shibuya", price: "ca. 140€/N", vibe: "Modern & trendy in Shibuya", type: "Upper Mid-Range", rating: "⭐⭐⭐⭐⭐" }
+            ]}
         ];
 
         const AccommodationGuideData = [
@@ -267,6 +309,25 @@
         }
 
         function renderInfoSections() {
+            document.getElementById('hotel-suggestions').innerHTML = HotelSuggestionsData.map(city => `
+                <div style="padding: 16px; border-bottom: 2px solid #e2e8f0;">
+                    <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">${city.city}</div>
+                    ${city.hotels.map(hotel => `
+                        <div style="padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 4px;">
+                                <span style="font-weight: 700; font-size: 13px; color: #0f172a;">${hotel.name}</span>
+                                <span style="font-size: 11px; font-weight: 700; background: #fef3c7; padding: 3px 8px; border-radius: 4px; color: #92400e;">${hotel.price}</span>
+                            </div>
+                            <p style="font-size: 11px; color: #64748b; margin-bottom: 4px;">${hotel.vibe}</p>
+                            <div style="font-size: 10px; color: #94a3b8; display: flex; gap: 12px;">
+                                <span>${hotel.type}</span>
+                                <span>${hotel.rating}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+            
             document.getElementById('entry-data').innerHTML = EntryData.map(item => `
                 <div><strong>${item.title}</strong><p>${item.desc}</p></div>
             `).join('');
