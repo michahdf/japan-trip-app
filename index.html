@@ -408,6 +408,9 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-container').style.display = 'block';
                 errorEl.textContent = '';
+                renderDiary();
+                renderChecklist();
+                renderInfoSections();
             } else {
                 errorEl.textContent = 'nope';
             }
