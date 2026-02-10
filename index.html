@@ -441,8 +441,8 @@
                 marker.bindPopup(`<strong>${loc.city}</strong><br>${loc.day}`);
             });
 
-            // Linien zwischen Punkten
-            for (let i = 0; i < MapLocations.length - 1; i++) {
+            // Linien zwischen Punkten (nur Inlandsverbindungen, ohne Flug München→Osaka)
+            for (let i = 1; i < MapLocations.length - 1; i++) {
                 const from = MapLocations[i];
                 const to = MapLocations[i + 1];
                 L.polyline(
