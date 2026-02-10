@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Japan 2026 Trip Planner</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #f1f5f9; color: #1e293b; }
@@ -83,6 +85,7 @@
         .login-button { width: 100%; padding: 12px; background: #0f172a; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.2s; }
         .login-button:hover { background: #1e293b; }
         .login-error { font-size: 12px; color: #dc2626; margin-top: 12px; min-height: 16px; }
+        #map { height: 500px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
     </style>
 </head>
 <body>
@@ -103,6 +106,7 @@
                 <h1 class="title">Japan<span class="title-accent">2026</span></h1>
                 <div class="nav">
                     <button class="nav-button active" onclick="switchTab(event, 'diary')">Tagebuch</button>
+                    <button class="nav-button" onclick="switchTab(event, 'map')">Karte</button>
                     <button class="nav-button" onclick="switchTab(event, 'tools')">Tools</button>
                     <button class="nav-button" onclick="switchTab(event, 'info')">Infos</button>
                 </div>
@@ -112,6 +116,9 @@
         <main class="main" id="main">
             <!-- DIARY TAB wird mit JS gefüllt -->
             <div id="diary" class="tab-content active"></div>
+            
+            <!-- MAP TAB -->
+            <div id="map" class="tab-content"></div>
             
             <!-- TOOLS TAB -->
             <div id="tools" class="tab-content">
@@ -377,6 +384,10 @@
             document.getElementById(tabName).classList.add('active');
             document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
+            
+            if (tabName === 'map') {
+                setTimeout(() => initMap(), 100);
+            }
         }
 
         function toggleCard(header) {
@@ -387,6 +398,58 @@
             const yen = document.getElementById('yen').value;
             const euro = yen ? (Number(yen) / 165).toFixed(2) : '-';
             document.getElementById('euro').textContent = euro + ' €';
+        }
+
+        // MAP DATA
+        const MapLocations = [
+            { city: "München", lat: 48.1351, lng: 11.5820, day: "30. Okt" },
+            { city: "Osaka", lat: 34.6937, lng: 135.5023, day: "31. Okt - 02. Nov" },
+            { city: "Koyasan", lat: 34.2159, lng: 135.5915, day: "01. Nov" },
+            { city: "Hiroshima", lat: 34.3853, lng: 132.4553, day: "02. Nov - 03. Nov" },
+            { city: "Kanazawa", lat: 36.5611, lng: 136.6563, day: "03. Nov - 04. Nov" },
+            { city: "Takayama", lat: 36.1429, lng: 137.1239, day: "04. Nov - 05. Nov" },
+            { city: "Matsumoto", lat: 36.2381, lng: 137.9701, day: "05. Nov - 06. Nov" },
+            { city: "Fuji", lat: 35.3606, lng: 138.7274, day: "06. Nov - 07. Nov" },
+            { city: "Tokio", lat: 35.6762, lng: 139.6503, day: "07. Nov - 10. Nov" }
+        ];
+
+        function initMap() {
+            const mapEl = document.getElementById('map');
+            if (!mapEl || mapEl.style.display === 'none') return;
+            
+            if (window.japanMap) {
+                window.japanMap.invalidateSize();
+                return;
+            }
+
+            window.japanMap = L.map('map').setView([35.5, 138.0], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                maxZoom: 19
+            }).addTo(window.japanMap);
+
+            MapLocations.forEach((loc, idx) => {
+                const marker = L.circleMarker([loc.lat, loc.lng], {
+                    radius: 8,
+                    fillColor: idx === 0 ? '#dc2626' : '#0f172a',
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(window.japanMap);
+
+                marker.bindPopup(`<strong>${loc.city}</strong><br>${loc.day}`);
+            });
+
+            // Linien zwischen Punkten
+            for (let i = 0; i < MapLocations.length - 1; i++) {
+                const from = MapLocations[i];
+                const to = MapLocations[i + 1];
+                L.polyline(
+                    [[from.lat, from.lng], [to.lat, to.lng]],
+                    { color: '#64748b', weight: 2, opacity: 0.6 }
+                ).addTo(window.japanMap);
+            }
         }
 
         // AUTH
